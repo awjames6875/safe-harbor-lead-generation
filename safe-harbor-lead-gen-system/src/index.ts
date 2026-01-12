@@ -44,10 +44,21 @@ async function main() {
 
     // Start Webhook Handler (Continuous)
     const { startWebhookServer } = await import('./web/webhookHandler');
-    startWebhookServer();
-
+    const server = startWebhookServer();
 
     console.log('System is running. Scheduled tasks initialized.');
+
+    // Graceful shutdown handling
+    const shutdown = () => {
+        console.log('Shutdown signal received, closing server...');
+        server.close(() => {
+            console.log('Server closed. Exiting.');
+            process.exit(0);
+        });
+    };
+
+    process.on('SIGTERM', shutdown);
+    process.on('SIGINT', shutdown);
 
     // For initial testing, uncomment to run immediately:
     // await runDailyScrape();

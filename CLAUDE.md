@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🤖 AI Coordination & Workflow
+> **Notice**: This project is being co-developed by Antigravity (Gemini) and Claude Code.
+- **Source of Truth**: Refer to `task.md` (if available) or this file for current status.
+- **Docker**: Antigravity is finding/configuring the Docker setup.
+- **Protocol**: Before starting major tasks, check if `task.md` indicates work in progress.
+
 ## Project Overview
 
 This repository contains the Safe Harbor Lead Generation System - an autonomous lead generation pipeline for Safe Harbor Behavioral Health. It discovers organizations via Google Maps scraping, enriches leads, syncs to CRM, and runs automated email/phone campaigns.

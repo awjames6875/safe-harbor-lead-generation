@@ -2,7 +2,18 @@
   "permissions": {
     "allow": [
       "Bash(rm:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(if not exist \"%USERPROFILE%\\\\.claude\" mkdir \"%USERPROFILE%\\\\.claude\")",
+      "Bash(docker-compose build:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(tasklist:*)",
+      "Bash(powershell -Command \"Get-Process -Id 149544 | Select-Object ProcessName, Id\")",
+      "Bash(powershell -Command \"Stop-Process -Id 149544 -Force\")",
+      "Bash(docker-compose down:*)",
+      "Bash(curl:*)",
+      "Bash(git checkout:*)"
     ]
   }
 }
