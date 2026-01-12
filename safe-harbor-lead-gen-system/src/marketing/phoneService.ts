@@ -2,10 +2,36 @@ import twilio from 'twilio';
 import config from '../config';
 import supabase from '../database/supabaseClient';
 
-const client = twilio(config.twilioAccountSid, config.twilioAuthToken);
+// Lazy initialization - only create client when needed and credentials exist
+let twilioWarningLogged = false;
+function getTwilioClient() {
+    const sid = config.twilioAccountSid;
+    const token = config.twilioAuthToken;
+
+    // Check if missing OR if it still has the placeholder brackets from .env.example
+    const isConfigured = sid && token && !sid.includes('[') && !token.includes('[');
+
+    if (!isConfigured) {
+        if (!twilioWarningLogged) {
+            console.warn('Twilio credentials not configured - SMS/call features disabled');
+            twilioWarningLogged = true;
+        }
+        return null;
+    }
+    return twilio(sid, token);
+}
 
 export async function sendSMS(lead: any, day: number) {
-    if (!config.twilioPhoneNumber || !lead.phone) return;
+    const client = getTwilioClient();
+    if (!client || !config.twilioPhoneNumber || !lead.phone) return;
+
+    // A2P 10DLC Check - Set this to true once your Twilio Brand/Campaign is approved
+    const A2P_APPROVED = false;
+
+    if (!A2P_APPROVED) {
+        console.log(`[A2P Skip] SMS to ${lead.name} (Day ${day}) skipped - Waiting for A2P 10DLC approval.`);
+        return;
+    }
 
     let message = '';
     if (day === 3) {
@@ -37,7 +63,8 @@ export async function sendSMS(lead: any, day: number) {
 }
 
 export async function makeAutomatedCall(lead: any) {
-    if (!config.twilioPhoneNumber || !lead.phone) return;
+    const client = getTwilioClient();
+    if (!client || !config.twilioPhoneNumber || !lead.phone) return;
 
     // TwiML Bin URL or a serverless function URL that hosts the TwiML script
     // <Response><Say>Hi, this is ...</Say><Record/></Response>

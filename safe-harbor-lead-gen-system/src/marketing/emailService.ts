@@ -2,14 +2,28 @@ import nodemailer from 'nodemailer';
 import config from '../config';
 import supabase from '../database/supabaseClient';
 
-// Setup Transporter (Gmail)
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: config.gmailUser,
-        pass: config.gmailAppPassword,
-    },
-});
+// Setup Transporter (Gmail) - Lazy initialization
+let emailWarningLogged = false;
+function getTransporter() {
+    const user = config.gmailUser;
+    const pass = config.gmailAppPassword;
+
+    // Check if missing OR if it still has the placeholder brackets
+    const isConfigured = user && pass && !user.includes('[') && !pass.includes('[');
+
+    if (!isConfigured) {
+        if (!emailWarningLogged) {
+            console.warn('Gmail credentials not configured - email features disabled');
+            emailWarningLogged = true;
+        }
+        return null;
+    }
+
+    return nodemailer.createTransport({
+        service: 'gmail',
+        auth: { user, pass },
+    });
+}
 
 const templates: Record<string, (name: string, orgName: string, fee: number) => string> = {
     'Daycare': (name, orgName, fee) => `Subject: ${orgName} - Add Mental Health Services + Generate Up to $${fee}/Day
@@ -26,7 +40,7 @@ Adam James`
 };
 
 export async function sendOutreachEmail(lead: any) {
-    if (!config.gmailUser || !lead.decision_maker_email) return;
+    if (!lead.decision_maker_email) return;
 
     const templateGen = templates[lead.category] || templates['Daycare']; // Fallback
     const content = templateGen(
@@ -44,6 +58,9 @@ export async function sendOutreachEmail(lead: any) {
         subject: subject,
         text: body
     };
+
+    const transporter = getTransporter();
+    if (!transporter) return;
 
     try {
         const info = await transporter.sendMail(mailOptions);

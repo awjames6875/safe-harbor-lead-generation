@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: safe-harbor-lead-gen
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./src:/usr/src/app/src
+    command: npm run dev
+    ports:
+      - "3001:3000"
+    # Puppeteer arguments usually required in Docker
+    environment:
+      - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

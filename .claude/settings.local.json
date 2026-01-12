@@ -13,7 +13,15 @@
       "Bash(powershell -Command \"Stop-Process -Id 149544 -Force\")",
       "Bash(docker-compose down:*)",
       "Bash(curl:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(docker-compose restart:*)",
+      "Bash(docker logs:*)",
+      "Bash(docker ps:*)",
+      "Bash(docker-compose stop:*)",
+      "Bash(powershell -Command \"\\(Invoke-WebRequest -Uri http://localhost:3001/health -UseBasicParsing\\).Content\")",
+      "Bash(docker:*)",
+      "Bash(timeout 60 docker-compose up:*)",
+      "Bash(docker-compose logs:*)"
     ]
   }
 }
